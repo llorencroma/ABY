@@ -40,7 +40,7 @@ namespace patch
 
 
 int32_t test_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
-		uint32_t bitlen, uint32_t nthreads, e_mt_gen_alg mt_alg, e_sharing sharing,
+		uint32_t bitlen,uint32_t nvals, uint32_t nthreads, e_mt_gen_alg mt_alg, e_sharing sharing,
 		    std::vector<long> x_start,std::vector<long> y_start,
 		    std::vector<long> x_end, std::vector<long> y_end
 		    ) {
@@ -81,7 +81,7 @@ int32_t test_circuit(e_role role, const std::string& address, uint16_t port, sec
 	double epsilon =13500000000;// 13500000000;//eps 
 	int minLns = 3;//m
 
-	int no_of_lines = 500; //= n_vals; in general number of rows 
+	int no_of_lines = nvals; //= n_vals; in general number of rows 
 	//# dictionary to store neighborhood information of line segments
 	std::map< std::string, std::map< std::string, std::vector<int> > > neighborhood;
 	
@@ -104,6 +104,7 @@ int32_t test_circuit(e_role role, const std::string& address, uint16_t port, sec
 	*s_out;
 
 	auto start1 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed2;
 	for(int l = 0; l < no_of_lines; l++){
 		if(neighborhood.count(patch::to_string(l))==0){
 
@@ -177,9 +178,14 @@ int32_t test_circuit(e_role role, const std::string& address, uint16_t port, sec
 			//HERE WE HAVE THE 4 DISTANCE METRICS 
 			output = s_out->get_clear_value<uint32_t>();
 			distance = (long)output*100;
-			if(role == SERVER){
-				//std::cout<< " DISTANCE BETWEEN " <<l<<" ANS " << ll << "-->" << distance << std::endl;
-			}
+			if(role == SERVER && (ll%100)== 1){
+				std::cout<< " DISTANCE BETWEEN " <<l<<" AND " << ll << "-->" << distance << std::endl;
+			
+			auto finish2= std::chrono::high_resolution_clock::now();
+			 elapsed2 = finish2- start1;
+			std::cout<< " Running Time " << elapsed2.count() << std::endl;
+
+}
 			
 			/** ++++++++++++ ABOVE IS OK ++++++++++++++++++++ */
 
@@ -411,7 +417,7 @@ for(int i= 0; i< keys.size();i++)
 		}*/
 		
 		// JUST TO PRINT THE WHOLE DICTIONARY/MAP
-		if(role == SERVER)
+	/**	if(role == SERVER)
 	{
 		for(auto itr1 = neighborhood.begin(); itr1 != neighborhood.end(); itr1++)
 		{
@@ -430,7 +436,7 @@ for(int i= 0; i< keys.size();i++)
 		}
 			std::cout <<" CLUSTERS SIZE "<<clusters.size()<<std::endl;
 
-	}
+	}*/
 
 	delete s1_x_start;
 	delete s1_y_start;
